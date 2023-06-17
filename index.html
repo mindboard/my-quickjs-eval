@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv='cache-control' content='no-cache'>
+        <meta http-equiv='expires' content='0'>
+        <meta http-equiv='pragma' content='no-cache'>
+        <title>DEMO QuickJS PlayGround</title>
+        <style>
+            body {
+                font-family: "Gill Sans", sans-serif;
+            }
+            .mygrid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-gap: 15px;
+            }
+        </style>
+    </head>
+    <body style="padding: 1em;background-color: #DFDAC4;">
+        <div class="mygrid">
+            <div>
+				<div id="editor" style="width: 98%; height: 60vh;"></div>
+				<div style="margin-top: 1em;"><button id="doIt">Run</button></div> 
+            </div>
+            <div style="width: 98%; height: 60vh; border: dashed 1px #333;">
+                <div id="result" style="padding: 1em;"></div>
+            </div>
+        </div>
+
+
+
+		<script src="js/ace.js"></script>
+        <script src="./my-quickjs-eval.js"></script>
+
+        <script>
+			const editor = ace.edit("editor")
+    		editor.setKeyboardHandler("ace/keyboard/emacs")
+			editor.session.setMode("ace/mode/javascript")
+			editor.getSession().setUseWorker(false);
+
+            Module.onRuntimeInitialized = () => {
+                const qjsEval = Module.cwrap('eval', 'string', ['string'])
+                //console.log(qjsEval)
+
+                const resultDiv = document.getElementById('result')
+                const textarea  = document.getElementById('textarea')
+    
+                const onSubmitActionPerformed = (evt)=> {
+                    //evt.preventDefault();
+					const textareaValue = editor.getValue()
+                    const r = qjsEval(textareaValue)
+                    resultDiv.innerHTML = ['<pre>', JSON.stringify(JSON.parse(r), null, 4), '</pre>'].join('')
+                    //resultDiv.textContent = qjsEval(textarea.value)
+                }
+    
+                // init
+				editor.setValue([
+                    'const total = (list, acc) => {',
+                    '  if(list.length==0 ){ return acc }',
+                    '  const head = list[0]',
+                    '  const tail = list.slice(1)',
+                    '  return total(tail, (acc+head))',
+                    '}',
+                    '',
+                    'const r = {',
+                    '  answer: total([1,2,3,4,5,6,7,8,9,10], 0)',
+                    '}',
+                    '',
+                    'r'
+                ].join('\r'))
+
+                resultDiv.textContent = "ここに実行結果が表示されます."
+
+                const runButton = document.getElementById('doIt')
+                runButton.addEventListener("click", onSubmitActionPerformed)
+            }
+
+        </script>
+    </body>
+</html>
