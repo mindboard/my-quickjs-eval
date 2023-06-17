@@ -20,8 +20,8 @@
     <body style="padding: 1em;background-color: #DFDAC4;">
         <div class="mygrid">
             <div>
-				<div id="editor" style="width: 98%; height: 60vh;"></div>
-				<div style="margin-top: 1em;"><button id="doIt">Run</button></div> 
+                <div id="editor" style="width: 98%; height: 60vh;"></div>
+                <div style="margin-top: 1em;"><button id="doIt">Run</button></div> 
             </div>
             <div style="width: 98%; height: 60vh; border: dashed 1px #333;">
                 <div id="result" style="padding: 1em;"></div>
@@ -30,32 +30,29 @@
 
 
 
-		<script src="js/ace.js"></script>
+        <script src="js/ace.js"></script>
         <script src="./my-quickjs-eval.js"></script>
 
         <script>
-			const editor = ace.edit("editor")
-    		editor.setKeyboardHandler("ace/keyboard/emacs")
-			editor.session.setMode("ace/mode/javascript")
-			editor.getSession().setUseWorker(false);
+            const editor = ace.edit("editor")
+            editor.setKeyboardHandler("ace/keyboard/emacs")
+            editor.session.setMode("ace/mode/javascript")
+            editor.getSession().setUseWorker(false);
 
             Module.onRuntimeInitialized = () => {
                 const qjsEval = Module.cwrap('eval', 'string', ['string'])
-                //console.log(qjsEval)
 
                 const resultDiv = document.getElementById('result')
                 const textarea  = document.getElementById('textarea')
     
                 const onSubmitActionPerformed = (evt)=> {
-                    //evt.preventDefault();
-					const textareaValue = editor.getValue()
+                    const textareaValue = editor.getValue()
                     const r = qjsEval(textareaValue)
                     resultDiv.innerHTML = ['<pre>', JSON.stringify(JSON.parse(r), null, 4), '</pre>'].join('')
-                    //resultDiv.textContent = qjsEval(textarea.value)
                 }
     
                 // init
-				editor.setValue([
+                editor.setValue([
                     'const total = (list, acc) => {',
                     '  if(list.length==0 ){ return acc }',
                     '  const head = list[0]',
